@@ -1,10 +1,12 @@
+import { REGISTER_DEPARTURE, REGISTER_RETURN } from './actions';
+
 const initialState = {
     studentRecords: [],
   };
   
   const studentRecordsReducer = (state = initialState, action) => {
     switch (action.type) {
-      case 'REGISTER_DEPARTURE':
+      case REGISTER_DEPARTURE:
         return {
           ...state,
           studentRecords: [
@@ -17,7 +19,7 @@ const initialState = {
             },
           ],
         };
-      case 'REGISTER_RETURN':
+      case REGISTER_RETURN:
         return {
           ...state,
           studentRecords: state.studentRecords.map((record) =>
