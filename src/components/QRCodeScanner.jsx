@@ -1,35 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { RNCamera } from 'react-native-camera';
+import { BarCodeScanner } from 'expo-barcode-scanner';
 
 const QRCodeScanner = ({ onQRCodeRead }) => {
-  const [cameraReady, setCameraReady] = useState(false);
+  const [hasPermission, setHasPermission] = useState(null);
 
-  const handleQRCodeRead = ({ data }) => {
+  const handleQRCodeScanned = ({ data }) => {
     onQRCodeRead(data);
   };
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setCameraReady(true);
-    }, 1000);
-
-    return () => clearTimeout(timeout);
+    (async () => {
+      const { status } = await BarCodeScanner.requestPermissionsAsync();
+      setHasPermission(status === 'granted');
+    })();
   }, []);
+
+  if (hasPermission === null) {
+    return <View />;
+  }
+  if (hasPermission === false) {
+    return <Text>Sem acesso à câmera</Text>;
+  }
 
   return (
     <View style={styles.container}>
-      <RNCamera
+      <BarCodeScanner
         style={styles.camera}
-        type={RNCamera.Constants.Type.back}
-        onBarCodeRead={handleQRCodeRead}
+        onBarCodeScanned={handleQRCodeScanned}
       >
-        {cameraReady && (
-          <View style={styles.overlay}>
-            <View style={styles.scanArea} />
-          </View>
-        )}
-      </RNCamera>
+        <View style={styles.overlay}>
+          <View style={styles.scanArea} />
+        </View>
+      </BarCodeScanner>
     </View>
   );
 };
